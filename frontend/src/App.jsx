@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { FileText, Trash2, CheckCircle, AlertTriangle, UploadCloud, File, Play } from 'lucide-react'
+import { FileText, Trash2, CheckCircle, AlertTriangle, UploadCloud, File, Play, PowerOff } from 'lucide-react'
 
 function App() {
   const [appState, setAppState] = useState('upload') // 'upload', 'loading', 'review'
@@ -172,22 +172,36 @@ function App() {
     )
   }
 
+const handleShutdown = () => {
+    fetch('http://localhost:5000/api/shutdown', { method: 'POST' }).catch(()=>console.log("Desligado"))
+    alert("O servidor foi desligado. Você pode fechar esta aba.")
+  }
+
   // REVIEW MODE
   return (
     <div className="flex h-screen bg-slate-900 text-slate-100 font-sans overflow-hidden">
       {/* Sidebar */}
-      <div className="w-1/3 max-w-sm bg-slate-800/50 backdrop-blur-md border-r border-slate-700/50 flex flex-col z-10">
-        <div className="p-6 border-b border-slate-700/50">
+      <div className="w-1/3 max-w-sm bg-slate-800/50 backdrop-blur-md border-r border-slate-700/50 flex flex-col z-10 relative">
+        <div className="p-6 border-b border-slate-700/50 flex justify-between items-start">
+          <div>
+            <button 
+              onClick={() => { setAppState('upload'); setSelectedFiles([]); setGroups([]); }}
+              className="text-sm text-blue-400 hover:text-blue-300 mb-4 flex items-center gap-1"
+            >
+              ← Nova Análise
+            </button>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              Revisão
+            </h1>
+            <p className="text-slate-400 text-sm mt-2">{groups.length} grupos em {selectedFiles.length} arquivos</p>
+          </div>
           <button 
-            onClick={() => { setAppState('upload'); setSelectedFiles([]); setGroups([]); }}
-            className="text-sm text-blue-400 hover:text-blue-300 mb-4 flex items-center gap-1"
+            onClick={handleShutdown}
+            className="flex items-center justify-center p-2 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-md"
+            title="Desligar Servidor"
           >
-            ← Nova Análise
+            <PowerOff size={18} />
           </button>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-            Revisão de Repetições
-          </h1>
-          <p className="text-slate-400 text-sm mt-2">{groups.length} grupos encontrados em {selectedFiles.length} arquivos</p>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {groups.length === 0 ? (
